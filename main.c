@@ -2,36 +2,37 @@
 #include <stdlib.h>
 #include "raylib.h"
 
-#define FPS 24
+#define GEN_PER_SECOND 24
 #define WIDTH 1200
 #define HEIGHT 800
 #define GRID_SIZE 20
 #define COLS (WIDTH  / GRID_SIZE)
 #define ROWS (HEIGHT / GRID_SIZE)
+#define LINE_WIDTH 0
 
-void draw_grid(int width, int height, int grid_size, int line_width) {
-    for (int x = 0; x < width / grid_size; x++) {
-        for (int y = 0; y < height / grid_size; y++) {
-            int posX = x * grid_size;
-            int posY = y * grid_size;
-            DrawRectangle(posX+line_width, posY+line_width, grid_size-line_width, grid_size-line_width, BLACK);
-        }
-    }
-}
-
-void draw_hud(const int generation) {
-    char buffer[50];
-    sprintf(buffer, "Generation: %d", generation);
-
-    DrawText(buffer, 10, 10, 28, SKYBLUE);
-
-}
 
 typedef struct {
     int generation;
     int** cells;
     int** neighbors;
 } Game;
+
+void draw_grid() {
+    for (int x = 0; x < WIDTH / GRID_SIZE; x++) {
+        for (int y = 0; y < HEIGHT / GRID_SIZE; y++) {
+            int posX = x * GRID_SIZE;
+            int posY = y * GRID_SIZE;
+            DrawRectangle(posX+LINE_WIDTH, posY+LINE_WIDTH, GRID_SIZE-LINE_WIDTH, GRID_SIZE-LINE_WIDTH, BLACK);
+        }
+    }
+}
+
+void draw_hud(const Game* game) {
+    char buffer[50];
+    sprintf(buffer, "Generation: %d", game->generation);
+
+    DrawText(buffer, 10, 10, 28, SKYBLUE);
+}
 
 void draw_life(const Game* game) {
     for (int x = 0; x < COLS; x++) {
@@ -86,12 +87,12 @@ void advance_gen(Game* game) {
                 cells[x][y] = 0;
             }
 
-            // Rule 3: "Overpopulation"
+            // Rule 2: "Overpopulation"
             if (alive && neighbor_count > 3) {
                 cells[x][y] = 0;
             }
 
-            // Rule 4: "Reproduction"
+            // Rule 3: "Reproduction"
             if (!alive && neighbor_count == 3) {
                 cells[x][y] = 1;
             }
@@ -164,7 +165,7 @@ Game* init_game() {
 int main(void)
 {
     InitWindow(WIDTH, HEIGHT, "Game of Life");
-    SetTargetFPS(FPS);
+    SetTargetFPS(GEN_PER_SECOND);
     
     Game* game = init_game();
     while (!WindowShouldClose())
@@ -172,9 +173,9 @@ int main(void)
         BeginDrawing();
         {
             ClearBackground(RAYWHITE);
-            draw_grid(WIDTH, HEIGHT, GRID_SIZE, 0);
-            draw_hud(game->generation);
+            draw_grid();
             draw_life(game);
+            draw_hud(game);
         }
         EndDrawing();
 
