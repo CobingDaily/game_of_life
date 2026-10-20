@@ -172,6 +172,15 @@ void draw_start_menu() {
     DrawText(text, midX, HEIGHT - 60, font_size, RAYWHITE);
 }
 
+void handle_mouse_selection(Game* game) {
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        const int x = GetMouseX() * COLS / WIDTH;
+        const int y = GetMouseY() * ROWS / HEIGHT;
+
+        game->cells[x][y] = game->cells[x][y] == 0 ? 1 : 0;
+    }
+}
+
 int main(void)
 {
     InitWindow(WIDTH, HEIGHT, "Game of Life");
@@ -193,7 +202,10 @@ int main(void)
 
         if (game->started)
             advance_gen(game);
-        else game->started = IsKeyPressed(KEY_SPACE);
+        else {
+            game->started = IsKeyPressed(KEY_SPACE);
+            handle_mouse_selection(game);
+        }
     }
 
     CloseWindow();
