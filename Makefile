@@ -1,7 +1,7 @@
 RAYLIB_SRC := thirdparty/raylib-6.2/src
 RAYLIB_LIB := $(RAYLIB_SRC)/libraylib.a
 
-CFLAGS := -Wall -Wextra -ggdb -I$(RAYLIB_SRC)
+CFLAGS := -Wall -Wextra -ggdb -Ithirdparty -I$(RAYLIB_SRC)
 LDLIBS := -framework Cocoa -framework IOKit -framework OpenGL -framework CoreVideo -framework QuartzCore
 
 main: main.c $(RAYLIB_LIB)
@@ -14,6 +14,6 @@ clean:
 	rm -rf main
 
 disctclean: clean
-	$(MAKE) _C $(RAYLIB_SRC) clean
+	$(MAKE) -C $(RAYLIB_SRC) clean
 
 .PHONY: clean disctclean

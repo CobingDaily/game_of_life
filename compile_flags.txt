@@ -1,3 +1,4 @@
+-Ithirdparty
 -Ithirdparty/raylib-6.2/src
 -Wall
 -Wextra
