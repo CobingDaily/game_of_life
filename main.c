@@ -13,6 +13,7 @@
 
 typedef struct {
     int generation;
+    bool started;
     int** cells;
     int** neighbors;
 } Game;
@@ -106,7 +107,8 @@ Game* init_game() {
         return NULL;
     }
 
-    ptr->generation = -3;
+    ptr->generation = 0;
+    ptr->started = false;
 
     int** cells = (int**)malloc(COLS * sizeof(int*));
     if (cells == NULL) {
@@ -162,6 +164,14 @@ Game* init_game() {
     return ptr;
 }
 
+void draw_start_menu() {
+    const char* text = "Press SPACE to Start";
+    const int font_size = 40;
+    const int text_width = MeasureText(text, font_size);
+    const int midX = (WIDTH - text_width) / 2;
+    DrawText(text, midX, HEIGHT - 60, font_size, RAYWHITE);
+}
+
 int main(void)
 {
     InitWindow(WIDTH, HEIGHT, "Game of Life");
@@ -176,10 +186,14 @@ int main(void)
             draw_grid();
             draw_life(game);
             draw_hud(game);
+            if (!game->started)
+                draw_start_menu();
         }
         EndDrawing();
 
-        advance_gen(game);
+        if (game->started)
+            advance_gen(game);
+        else game->started = IsKeyPressed(KEY_SPACE);
     }
 
     CloseWindow();
